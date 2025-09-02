@@ -46,9 +46,93 @@ class Game {
         this.start();
       }
     });
+
+    document.addEventListener('keydown', (ev) => {
+      switch (ev.key) {
+        case 'ArrowUp':
+          this.moveUp();
+          break;
+        case 'ArrowDown':
+          this.moveDown();
+          break;
+        case 'ArrowLeft':
+          this.moveLeft();
+          break;
+        case 'ArrowRight':
+          this.moveRight();
+          break;
+      }
+    });
   }
 
-  moveLeft() {}
+  get rows() {
+    return this.board;
+  }
+
+  set rows(newRows) {
+    this.board = newRows;
+  }
+
+  get columns() {
+    const cols = [];
+
+    for (let i = 0; i < this.size; i++) {
+      const col = [];
+
+      for (let j = 0; j < this.size; j++) {
+        col.push(this.board[j][i]);
+      }
+      cols.push(col);
+    }
+
+    return cols;
+  }
+
+  set columns(newColumns) {
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size; j++) {
+        this.board[j][i] = newColumns[i][j];
+      }
+    }
+  }
+
+  moveLeft() {
+    if (this.gameStatus !== 'playing') {
+      return;
+    }
+
+    for (let i = 0; i < this.size; i++) {
+      const row = this.board[i];
+
+      let RowWithoutZeroElements = row.filter((cell) => cell !== 0);
+      let newRow = [...RowWithoutZeroElements];
+
+      while (newRow.length < this.size) {
+        newRow.push(0);
+      }
+
+      for (let j = 0; j < this.size - 1; j++) {
+        if (newRow[j] !== 0 && newRow[j] === newRow[j + 1]) {
+          newRow[j] *= 2;
+          this.gameScore += newRow[j];
+          newRow[j + 1] = 0;
+          j++;
+        }
+      }
+
+      RowWithoutZeroElements = newRow.filter((cell) => cell !== 0);
+      newRow = [...RowWithoutZeroElements];
+
+      while (newRow.length < this.size) {
+        newRow.push(0);
+      }
+
+      this.board[i] = newRow;
+    }
+
+    this.addRandomCell();
+    this.updateBoard();
+  }
   moveRight() {}
   moveUp() {}
   moveDown() {}
@@ -97,6 +181,8 @@ class Game {
     this.addRandomCell();
     this.addRandomCell();
     this.updateBoard();
+
+    // console.log(this.board);
   }
 
   /**
