@@ -133,14 +133,52 @@ class Game {
     this.addRandomCell();
     this.updateBoard();
   }
-  moveRight() {}
+
+  moveRight() {
+    if (this.gameStatus !== 'playing') {
+      return;
+    }
+
+    for (let i = 0; i < this.size; i++) {
+      const row = this.board[i];
+      let RowWithoutZeroElements = row.filter((cell) => cell !== 0);
+      let newRow = [...RowWithoutZeroElements];
+
+      while (newRow.length < this.size) {
+        newRow.unshift(0);
+      }
+
+      for (let j = this.size - 1; j > 0; j--) {
+        if (newRow[j] !== 0 && newRow[j] === newRow[j - 1]) {
+          newRow[j] *= 2;
+          this.gameScore += newRow[j];
+          newRow[j - 1] = 0;
+          j--;
+        }
+      }
+
+      RowWithoutZeroElements = newRow.filter((cell) => cell !== 0);
+      newRow = [...RowWithoutZeroElements];
+
+      while (newRow.length < this.size) {
+        newRow.unshift(0);
+      }
+
+      this.board[i] = newRow;
+    }
+
+    this.addRandomCell();
+    this.updateBoard();
+  }
   moveUp() {}
   moveDown() {}
 
   /**
    * @returns {number}
    */
-  getScore() {}
+  getScore() {
+    return this.gameScore;
+  }
 
   /**
    * @returns {number[][]}
