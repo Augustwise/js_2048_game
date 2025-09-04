@@ -170,7 +170,49 @@ class Game {
     this.addRandomCell();
     this.updateBoard();
   }
-  moveUp() {}
+  moveUp() {
+    if (this.gameStatus !== 'playing') {
+      return;
+    }
+
+    for (let i = 0; i < this.size; i++) {
+      const col = [];
+
+      for (let j = 0; j < this.size; j++) {
+        col.push(this.board[j][i]);
+      }
+
+      for (let k = 0; k < this.size; k++) {
+        let column = col.filter((cell) => cell !== 0);
+        let newColumn = [...column];
+
+        while (newColumn.length < this.size) {
+          newColumn.push(0);
+        }
+
+        for (let j = 0; j < this.size - 1; j++) {
+          if (newColumn[j] !== 0 && newColumn[j] === newColumn[j + 1]) {
+            newColumn[j] *= 2;
+            this.gameScore += newColumn[j];
+            newColumn[j + 1] = 0;
+            j++;
+          }
+        }
+
+        column = newColumn.filter((cell) => cell !== 0);
+        newColumn = [...column];
+
+        while (newColumn.length < this.size) {
+          newColumn.push(0);
+        }
+
+        this.board[k][i] = newColumn[k];
+      }
+    }
+
+    this.addRandomCell();
+    this.updateBoard();
+  }
   moveDown() {}
 
   /**
