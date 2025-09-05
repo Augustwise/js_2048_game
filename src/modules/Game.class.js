@@ -213,7 +213,49 @@ class Game {
     this.addRandomCell();
     this.updateBoard();
   }
-  moveDown() {}
+  moveDown() {
+    if (this.gameStatus !== 'playing') {
+      return;
+    }
+
+    for (let i = 0; i < this.size; i++) {
+      const col = [];
+
+      for (let j = 0; j < this.size; j++) {
+        col.push(this.board[j][i]);
+      }
+
+      let columnWithoutZeroElements = col.filter((cell) => cell !== 0);
+      let newColumn = [...columnWithoutZeroElements];
+
+      while (newColumn.length < this.size) {
+        newColumn.unshift(0);
+      }
+
+      for (let j = this.size - 1; j > 0; j--) {
+        if (newColumn[j] !== 0 && newColumn[j] === newColumn[j - 1]) {
+          newColumn[j] *= 2;
+          this.gameScore += newColumn[j];
+          newColumn[j - 1] = 0;
+          j--;
+        }
+      }
+
+      columnWithoutZeroElements = newColumn.filter((cell) => cell !== 0);
+      newColumn = [...columnWithoutZeroElements];
+
+      while (newColumn.length < this.size) {
+        newColumn.unshift(0);
+      }
+
+      for (let k = 0; k < this.size; k++) {
+        this.board[k][i] = newColumn[k];
+      }
+    }
+
+    this.addRandomCell();
+    this.updateBoard();
+  }
 
   /**
    * @returns {number}
