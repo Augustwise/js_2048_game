@@ -1,6 +1,9 @@
 'use strict';
 
 const startMessage = document.querySelector('.message-start');
+const gameScore = document.querySelector('.game-score');
+const winMessage = document.querySelector('.message-win');
+const loseMessage = document.querySelector('.message-lose');
 
 /**
  * This class represents the game.
@@ -132,6 +135,8 @@ class Game {
 
     this.addRandomCell();
     this.updateBoard();
+    this.checkWinCondition();
+    this.checkLooseCondition();
   }
 
   moveRight() {
@@ -169,6 +174,8 @@ class Game {
 
     this.addRandomCell();
     this.updateBoard();
+    this.checkWinCondition();
+    this.checkLooseCondition();
   }
   moveUp() {
     if (this.gameStatus !== 'playing') {
@@ -212,6 +219,8 @@ class Game {
 
     this.addRandomCell();
     this.updateBoard();
+    this.checkWinCondition();
+    this.checkLooseCondition();
   }
   moveDown() {
     if (this.gameStatus !== 'playing') {
@@ -255,6 +264,8 @@ class Game {
 
     this.addRandomCell();
     this.updateBoard();
+    this.checkWinCondition();
+    this.checkLooseCondition();
   }
 
   /**
@@ -359,6 +370,33 @@ class Game {
     this.board[row][col] = this.getRandomValue();
   }
 
+  checkWinCondition() {
+    for (let row = 0; row < this.size; row++) {
+      for (let col = 0; col < this.size; col++) {
+        if (this.board[row][col] === 2048) {
+          this.gameStatus = 'win';
+          winMessage.classList.remove('hidden');
+          this.buttonStart.classList.remove('restart');
+          this.buttonStart.textContent = 'Start';
+
+          return;
+        }
+      }
+    }
+  }
+
+  checkLooseCondition() {
+    const emptyCells = this.getEmptyCells();
+
+    if (emptyCells.length > 0) {
+      return;
+    }
+
+    loseMessage.classList.remove('hidden');
+    this.buttonStart.classList.remove('restart');
+    this.buttonStart.textContent = 'Start';
+  }
+
   updateBoard() {
     const tableRows = this.gameField.querySelectorAll('.field-row');
 
@@ -378,6 +416,8 @@ class Game {
         }
       });
     });
+
+    gameScore.textContent = this.gameScore;
   }
 }
 
