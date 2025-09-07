@@ -392,6 +392,25 @@ class Game {
       return;
     }
 
+    // Can the user move horizontally?
+    for (let i = 0; i < this.size; i++) {
+      for (let j = 0; j < this.size - 1; j++) {
+        if (this.board[i][j] === this.board[i][j + 1]) {
+          return;
+        }
+      }
+    }
+
+    // Can the user move vertically?
+    for (let j = 0; j < this.size; j++) {
+      for (let i = 0; i < this.size - 1; i++) {
+        if (this.board[i][j] === this.board[i + 1][j]) {
+          return;
+        }
+      }
+    }
+
+    this.gameStatus = 'lose';
     loseMessage.classList.remove('hidden');
     this.buttonStart.classList.remove('restart');
     this.buttonStart.textContent = 'Start';
