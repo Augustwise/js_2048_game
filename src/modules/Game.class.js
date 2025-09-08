@@ -25,22 +25,21 @@ class Game {
    * If passed, the board will be initialized with the provided
    * initial state.
    */
-  constructor(initialState) {
-    // eslint-disable-next-line no-console
-    console.log(initialState);
-
+  constructor() {
     this.gameStatus = 'idle';
     this.gameScore = 0;
     this.size = 4;
     this.gameField = document.querySelector('.game-field');
     this.buttonStart = document.querySelector('.button.start');
 
-    this.board = initialState || [
+    this.board = [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
       [0, 0, 0, 0],
     ];
+
+    this.loadState();
 
     this.buttonStart.addEventListener('click', () => {
       if (this.gameStatus === 'playing') {
@@ -66,6 +65,8 @@ class Game {
           break;
       }
     });
+
+    this.updateBoard();
   }
 
   get rows() {
@@ -137,6 +138,7 @@ class Game {
     this.updateBoard();
     this.checkWinCondition();
     this.checkLooseCondition();
+    this.saveState();
   }
 
   moveRight() {
@@ -176,6 +178,7 @@ class Game {
     this.updateBoard();
     this.checkWinCondition();
     this.checkLooseCondition();
+    this.saveState();
   }
   moveUp() {
     if (this.gameStatus !== 'playing') {
@@ -221,6 +224,7 @@ class Game {
     this.updateBoard();
     this.checkWinCondition();
     this.checkLooseCondition();
+    this.saveState();
   }
   moveDown() {
     if (this.gameStatus !== 'playing') {
@@ -266,6 +270,7 @@ class Game {
     this.updateBoard();
     this.checkWinCondition();
     this.checkLooseCondition();
+    this.saveState();
   }
 
   /**
@@ -314,6 +319,7 @@ class Game {
     this.addRandomCell();
     this.addRandomCell();
     this.updateBoard();
+    this.saveState();
 
     // console.log(this.board);
   }
@@ -324,7 +330,10 @@ class Game {
   restart() {
     this.gameStatus = 'idle';
     this.gameScore = 0;
+    localStorage.removeItem('gameState');
     startMessage.classList.remove('hidden');
+    winMessage.classList.add('hidden');
+    loseMessage.classList.add('hidden');
     this.buttonStart.classList.remove('restart');
     this.buttonStart.textContent = 'Start';
 
@@ -416,6 +425,41 @@ class Game {
     this.buttonStart.textContent = 'Start';
   }
 
+  saveState() {
+    const gameState = {
+      board: this.board,
+      score: this.gameScore,
+      status: this.gameStatus,
+    };
+
+    localStorage.setItem('gameState', JSON.stringify(gameState));
+  }
+
+  loadState() {
+    const savedState = localStorage.getItem('gameState');
+
+    if (!savedState) {
+      return;
+    }
+
+    const gameState = JSON.parse(savedState);
+
+    this.board = gameState.board;
+    this.gameScore = gameState.score;
+    this.gameStatus = gameState.status;
+
+    if (this.gameStatus === 'playing') {
+      startMessage.classList.add('hidden');
+      winMessage.classList.add('hidden');
+      loseMessage.classList.add('hidden');
+      this.buttonStart.classList.add('restart');
+      this.buttonStart.textContent = 'Restart';
+    } else if (this.gameStatus === 'win') {
+      winMessage.classList.remove('hidden');
+    } else if (this.gameStatus === 'lose') {
+      loseMessage.classList.remove('hidden');
+    }
+  }
   updateBoard() {
     const tableRows = this.gameField.querySelectorAll('.field-row');
 
@@ -440,4 +484,4 @@ class Game {
   }
 }
 
-module.exports = Game;
+export default Game;
