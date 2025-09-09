@@ -105,6 +105,8 @@ class Game {
       return;
     }
 
+    const boardBeforeMove = JSON.stringify(this.board);
+
     for (let i = 0; i < this.size; i++) {
       const row = this.board[i];
 
@@ -134,7 +136,9 @@ class Game {
       this.board[i] = newRow;
     }
 
-    this.addRandomCell();
+    if (boardBeforeMove !== JSON.stringify(this.board)) {
+      this.addRandomCell();
+    }
     this.updateBoard();
     this.checkWinCondition();
     this.checkLooseCondition();
@@ -145,6 +149,8 @@ class Game {
     if (this.gameStatus !== 'playing') {
       return;
     }
+
+    const boardBeforeMove = JSON.stringify(this.board);
 
     for (let i = 0; i < this.size; i++) {
       const row = this.board[i];
@@ -174,7 +180,9 @@ class Game {
       this.board[i] = newRow;
     }
 
-    this.addRandomCell();
+    if (boardBeforeMove !== JSON.stringify(this.board)) {
+      this.addRandomCell();
+    }
     this.updateBoard();
     this.checkWinCondition();
     this.checkLooseCondition();
@@ -185,6 +193,8 @@ class Game {
       return;
     }
 
+    const boardBeforeMove = JSON.stringify(this.board);
+
     for (let i = 0; i < this.size; i++) {
       const col = [];
 
@@ -192,35 +202,37 @@ class Game {
         col.push(this.board[j][i]);
       }
 
+      let columnWithoutZeroElements = col.filter((cell) => cell !== 0);
+      let newColumn = [...columnWithoutZeroElements];
+
+      while (newColumn.length < this.size) {
+        newColumn.push(0);
+      }
+
+      for (let j = 0; j < this.size - 1; j++) {
+        if (newColumn[j] !== 0 && newColumn[j] === newColumn[j + 1]) {
+          newColumn[j] *= 2;
+          this.gameScore += newColumn[j];
+          newColumn[j + 1] = 0;
+          j++;
+        }
+      }
+
+      columnWithoutZeroElements = newColumn.filter((cell) => cell !== 0);
+      newColumn = [...columnWithoutZeroElements];
+
+      while (newColumn.length < this.size) {
+        newColumn.push(0);
+      }
+
       for (let k = 0; k < this.size; k++) {
-        let column = col.filter((cell) => cell !== 0);
-        let newColumn = [...column];
-
-        while (newColumn.length < this.size) {
-          newColumn.push(0);
-        }
-
-        for (let j = 0; j < this.size - 1; j++) {
-          if (newColumn[j] !== 0 && newColumn[j] === newColumn[j + 1]) {
-            newColumn[j] *= 2;
-            this.gameScore += newColumn[j];
-            newColumn[j + 1] = 0;
-            j++;
-          }
-        }
-
-        column = newColumn.filter((cell) => cell !== 0);
-        newColumn = [...column];
-
-        while (newColumn.length < this.size) {
-          newColumn.push(0);
-        }
-
         this.board[k][i] = newColumn[k];
       }
     }
 
-    this.addRandomCell();
+    if (boardBeforeMove !== JSON.stringify(this.board)) {
+      this.addRandomCell();
+    }
     this.updateBoard();
     this.checkWinCondition();
     this.checkLooseCondition();
@@ -230,6 +242,8 @@ class Game {
     if (this.gameStatus !== 'playing') {
       return;
     }
+
+    const boardBeforeMove = JSON.stringify(this.board);
 
     for (let i = 0; i < this.size; i++) {
       const col = [];
@@ -266,7 +280,9 @@ class Game {
       }
     }
 
-    this.addRandomCell();
+    if (boardBeforeMove !== JSON.stringify(this.board)) {
+      this.addRandomCell();
+    }
     this.updateBoard();
     this.checkWinCondition();
     this.checkLooseCondition();
@@ -305,6 +321,10 @@ class Game {
    * Starts the game.
    */
   start() {
+    this.gameScore = 0;
+    winMessage.classList.add('hidden');
+    loseMessage.classList.add('hidden');
+
     this.board = [
       [0, 0, 0, 0],
       [0, 0, 0, 0],
@@ -421,8 +441,8 @@ class Game {
 
     this.gameStatus = 'lose';
     loseMessage.classList.remove('hidden');
-    this.buttonStart.classList.remove('restart');
-    this.buttonStart.textContent = 'Start';
+    this.buttonStart.classList.add('restart');
+    this.buttonStart.textContent = 'Restart';
   }
 
   saveState() {
@@ -458,6 +478,8 @@ class Game {
       winMessage.classList.remove('hidden');
     } else if (this.gameStatus === 'lose') {
       loseMessage.classList.remove('hidden');
+      this.buttonStart.classList.add('restart');
+      this.buttonStart.textContent = 'Restart';
     }
   }
   updateBoard() {
